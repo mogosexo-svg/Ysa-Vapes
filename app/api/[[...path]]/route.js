@@ -46,9 +46,24 @@ async function requireAdmin(request) {
   return session
 }
 
-const SEED_VERSION = 'v3'
+const SEED_VERSION = 'v4'
+let seedInProgress = null
 
 async function ensureSeed(database) {
+  const existing = await database.collection('settings').findOne({ id: 'main' })
+  if (existing && existing.seedVersion === SEED_VERSION) return
+  if (seedInProgress) return seedInProgress
+  seedInProgress = (async () => {
+    try {
+      await runSeed(database)
+    } finally {
+      seedInProgress = null
+    }
+  })()
+  return seedInProgress
+}
+
+async function runSeed(database) {
   const existing = await database.collection('settings').findOne({ id: 'main' })
   if (existing && existing.seedVersion === SEED_VERSION) return
 
@@ -180,7 +195,7 @@ async function ensureSeed(database) {
     image: vapeImgs[1],
     buttonText: 'Ver colección',
     link: '#productos',
-    gradient: 'from-zinc-800 via-zinc-900 to-black',
+    gradient: 'from-violet-600 via-indigo-600 to-cyan-500',
     active: true,
     createdAt: new Date()
   })
