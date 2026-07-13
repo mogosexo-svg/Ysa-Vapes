@@ -57,7 +57,7 @@ function LoginView({ onLogin }) {
               <Label className="text-sm mb-1.5 block">Contraseña</Label>
               <Input type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleLogin()} className="glass border-white/10 h-11" />
             </div>
-            <Button onClick={handleLogin} disabled={loading} className="w-full h-11 bg-gradient-to-r from-purple-600 to-cyan-500 hover:opacity-90 font-semibold">
+            <Button onClick={handleLogin} disabled={loading} className="w-full h-11 btn-primary-tesla font-semibold">
               {loading ? 'Ingresando...' : 'Ingresar'}
             </Button>
             <p className="text-xs text-white/40 text-center">Default: admin@clouddistrict.com / admin123</p>
@@ -172,7 +172,7 @@ function fileToDataUrl(file) {
 function ProductFormDialog({ open, onClose, product, categories, onSaved }) {
   const [form, setForm] = useState({})
   useEffect(() => {
-    setForm(product || { name: '', shortDescription: '', description: '', price: 0, oldPrice: null, categoryId: '', stock: 0, active: true, featured: false, tag: '', features: [], images: [], inSlider: false })
+    setForm(product || { name: '', shortDescription: '', description: '', price: 0, oldPrice: null, categoryId: '', stock: 0, active: true, featured: false, tag: '', features: [], images: [], inSlider: false, puffs: null })
   }, [product, open])
 
   const save = async () => {
@@ -212,6 +212,10 @@ function ProductFormDialog({ open, onClose, product, categories, onSaved }) {
           <div>
             <Label>Stock</Label>
             <Input type="number" value={form.stock || 0} onChange={e => setForm({ ...form, stock: e.target.value })} className="glass border-white/10 mt-1" />
+          </div>
+          <div>
+            <Label>Puffs (opcional)</Label>
+            <Input type="number" value={form.puffs || ''} onChange={e => setForm({ ...form, puffs: e.target.value || null })} placeholder="Ej: 40000" className="glass border-white/10 mt-1" />
           </div>
           <div>
             <Label>Categoría</Label>
@@ -270,7 +274,7 @@ function ProductFormDialog({ open, onClose, product, categories, onSaved }) {
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>Cancelar</Button>
-          <Button onClick={save} className="bg-gradient-to-r from-purple-600 to-cyan-500">Guardar</Button>
+          <Button onClick={save} className="btn-primary-tesla font-semibold">Guardar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -317,7 +321,7 @@ function ProductsView() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
             <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar..." className="pl-9 glass border-white/10 w-64" />
           </div>
-          <Button onClick={() => { setEditing(null); setOpen(true) }} className="bg-gradient-to-r from-purple-600 to-cyan-500"><Plus className="h-4 w-4 mr-2" /> Nuevo</Button>
+          <Button onClick={() => { setEditing(null); setOpen(true) }} className="btn-primary-tesla font-semibold"><Plus className="h-4 w-4 mr-2" /> Nuevo</Button>
         </div>
       </div>
 
@@ -407,7 +411,7 @@ function CategoriesView() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-black">Categorías</h1>
-        <Button onClick={() => { setEditing({ name: '', description: '', image: '', active: true, order: items.length }); setOpen(true) }} className="bg-gradient-to-r from-purple-600 to-cyan-500"><Plus className="h-4 w-4 mr-2" /> Nueva</Button>
+        <Button onClick={() => { setEditing({ name: '', description: '', image: '', active: true, order: items.length }); setOpen(true) }} className="btn-primary-tesla font-semibold"><Plus className="h-4 w-4 mr-2" /> Nueva</Button>
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.map(c => (
@@ -449,7 +453,7 @@ function CategoriesView() {
               <div className="flex items-center gap-2"><Switch checked={editing.active !== false} onCheckedChange={v => setEditing({ ...editing, active: v })} /><Label>Activa</Label></div>
             </div>
           )}
-          <DialogFooter><Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button><Button onClick={save} className="bg-gradient-to-r from-purple-600 to-cyan-500">Guardar</Button></DialogFooter>
+          <DialogFooter><Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button><Button onClick={save} className="btn-primary-tesla font-semibold">Guardar</Button></DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -509,7 +513,7 @@ function SliderView() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-black">Slider destacados</h1>
-        <Button onClick={save} className="bg-gradient-to-r from-purple-600 to-cyan-500">Guardar cambios</Button>
+        <Button onClick={save} className="btn-primary-tesla font-semibold">Guardar cambios</Button>
       </div>
       <div className="grid lg:grid-cols-2 gap-6">
         <Card className="glass border-white/10 p-4">
@@ -575,7 +579,7 @@ function BannersView() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-black">Banners promocionales</h1>
-        <Button onClick={() => { setEditing({ title: '', text: '', image: '', buttonText: 'Ver más', link: '#', gradient: gradients[0], active: true }); setOpen(true) }} className="bg-gradient-to-r from-purple-600 to-cyan-500"><Plus className="h-4 w-4 mr-2" /> Nuevo</Button>
+        <Button onClick={() => { setEditing({ title: '', text: '', image: '', buttonText: 'Ver más', link: '#', gradient: gradients[0], active: true }); setOpen(true) }} className="btn-primary-tesla font-semibold"><Plus className="h-4 w-4 mr-2" /> Nuevo</Button>
       </div>
       <div className="space-y-4">
         {items.map(b => (
@@ -625,7 +629,7 @@ function BannersView() {
               <div className="flex items-center gap-2"><Switch checked={editing.active !== false} onCheckedChange={v => setEditing({ ...editing, active: v })} /><Label>Activo</Label></div>
             </div>
           )}
-          <DialogFooter><Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button><Button onClick={save} className="bg-gradient-to-r from-purple-600 to-cyan-500">Guardar</Button></DialogFooter>
+          <DialogFooter><Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button><Button onClick={save} className="btn-primary-tesla font-semibold">Guardar</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
@@ -645,7 +649,7 @@ function SettingsView() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-black">Configuración</h1>
-        <Button onClick={save} className="bg-gradient-to-r from-purple-600 to-cyan-500">Guardar</Button>
+        <Button onClick={save} className="btn-primary-tesla font-semibold">Guardar</Button>
       </div>
       <div className="grid lg:grid-cols-2 gap-4">
         <Card className="glass border-white/10 p-6 space-y-4">

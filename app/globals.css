@@ -6,31 +6,31 @@
 
 @layer base {
   :root {
-    --background: 0 0% 3%;
+    --background: 0 0% 4%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 6%;
+    --card: 240 4% 8%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 6%;
+    --popover: 240 4% 8%;
     --popover-foreground: 0 0% 98%;
-    --primary: 265 89% 66%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 6% 12%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 240 4% 12%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 5% 10%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 190 95% 55%;
+    --muted: 240 4% 10%;
+    --muted-foreground: 240 4% 65%;
+    --accent: 220 15% 60%;
     --accent-foreground: 0 0% 5%;
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 6% 15%;
-    --input: 240 6% 15%;
-    --ring: 265 89% 66%;
-    --radius: 0.75rem;
-    --chart-1: 265 89% 66%;
-    --chart-2: 220 90% 60%;
-    --chart-3: 190 95% 55%;
-    --chart-4: 280 80% 60%;
-    --chart-5: 200 90% 50%;
+    --border: 240 4% 14%;
+    --input: 240 4% 14%;
+    --ring: 0 0% 70%;
+    --radius: 0.5rem;
+    --chart-1: 0 0% 90%;
+    --chart-2: 220 15% 60%;
+    --chart-3: 200 20% 50%;
+    --chart-4: 240 5% 40%;
+    --chart-5: 0 0% 70%;
   }
   * { @apply border-border; }
   body { @apply bg-background text-foreground; }
@@ -39,31 +39,37 @@
 
 @layer utilities {
   .glass {
-    background: rgba(15, 15, 20, 0.55);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    background: rgba(20, 20, 22, 0.55);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.06);
   }
   .glass-strong {
-    background: rgba(10, 10, 14, 0.75);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    background: rgba(12, 12, 14, 0.85);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
   .gradient-text {
-    background: linear-gradient(135deg, #a855f7 0%, #6366f1 40%, #06b6d4 100%);
+    background: linear-gradient(180deg, #ffffff 0%, #a1a1aa 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
-  .neon-glow {
-    box-shadow: 0 0 24px rgba(168, 85, 247, 0.35), 0 0 48px rgba(99, 102, 241, 0.15);
+  .subtle-glow {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04);
   }
+  .btn-primary-tesla {
+    background: linear-gradient(180deg, #f4f4f5 0%, #d4d4d8 100%);
+    color: #09090b;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .btn-primary-tesla:hover { background: linear-gradient(180deg, #ffffff 0%, #e4e4e7 100%); }
   .radial-bg {
-    background: radial-gradient(1200px 600px at 20% 10%, rgba(168, 85, 247, 0.18), transparent 60%),
-                radial-gradient(1000px 500px at 80% 20%, rgba(6, 182, 212, 0.12), transparent 60%),
-                radial-gradient(800px 400px at 50% 100%, rgba(99, 102, 241, 0.15), transparent 60%),
-                #050507;
+    background: radial-gradient(1200px 600px at 20% 10%, rgba(120, 120, 130, 0.08), transparent 60%),
+                radial-gradient(1000px 500px at 80% 20%, rgba(90, 100, 120, 0.06), transparent 60%),
+                radial-gradient(800px 400px at 50% 100%, rgba(60, 60, 70, 0.08), transparent 60%),
+                #08080a;
   }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -72,12 +78,12 @@
 .particle {
   position: absolute;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.6), rgba(6, 182, 212, 0) 70%);
-  animation: float 8s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(200, 200, 210, 0.35), rgba(150, 150, 160, 0) 70%);
+  animation: float 10s ease-in-out infinite;
   pointer-events: none;
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.4; }
-  50% { transform: translateY(-30px) translateX(20px); opacity: 0.8; }
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  50% { transform: translateY(-24px) translateX(16px); opacity: 0.6; }
 }

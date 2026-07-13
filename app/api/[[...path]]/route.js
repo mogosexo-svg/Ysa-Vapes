@@ -46,47 +46,61 @@ async function requireAdmin(request) {
   return session
 }
 
+const SEED_VERSION = 'v3'
+
 async function ensureSeed(database) {
   const existing = await database.collection('settings').findOne({ id: 'main' })
-  if (existing) return
+  if (existing && existing.seedVersion === SEED_VERSION) return
 
-  // Default settings
-  await database.collection('settings').insertOne({
-    id: 'main',
-    storeName: 'Cloud District',
-    logoUrl: '',
-    whatsappNumber: '525555555555',
-    whatsappMessage: 'Hola, quisiera recibir información sobre sus productos.',
-    instagram: 'https://instagram.com/clouddistrict',
-    tiktok: 'https://tiktok.com/@clouddistrict',
-    facebook: 'https://facebook.com/clouddistrict',
-    address: 'Av. Reforma 123, CDMX, México',
-    hours: 'Lun-Dom 11:00 - 22:00',
-    email: 'contacto@clouddistrict.mx',
-    footerText: 'Productos exclusivos para mayores de edad. Prohibida su venta a menores de 18 años.',
-    currency: 'MXN',
-    currencySymbol: '$',
-    legalNotice: 'El uso de productos de vapeo puede ser dañino para la salud.',
-    minAge: 18,
-    updatedAt: new Date()
-  })
+  // Reset data collections (keep sessions + admin_users)
+  await database.collection('products').deleteMany({})
+  await database.collection('categories').deleteMany({})
+  await database.collection('banners').deleteMany({})
 
-  // Admin user
-  await database.collection('admin_users').insertOne({
-    id: uuidv4(),
-    email: 'admin@clouddistrict.com',
-    passwordHash: hashPassword('admin123'),
-    role: 'owner',
-    createdAt: new Date()
-  })
+  // Settings
+  await database.collection('settings').updateOne(
+    { id: 'main' },
+    {
+      $set: {
+        id: 'main',
+        storeName: 'Cloud District',
+        logoUrl: '',
+        whatsappNumber: '525555555555',
+        whatsappMessage: 'Hola, quisiera recibir información sobre sus productos.',
+        instagram: 'https://instagram.com/clouddistrict',
+        tiktok: 'https://tiktok.com/@clouddistrict',
+        facebook: 'https://facebook.com/clouddistrict',
+        address: 'Av. Reforma 123, CDMX, México',
+        hours: 'Lun-Dom 11:00 - 22:00',
+        email: 'contacto@clouddistrict.mx',
+        footerText: 'Productos exclusivos para mayores de edad. Prohibida su venta a menores de 18 años.',
+        currency: 'USD',
+        currencySymbol: '$',
+        legalNotice: 'El uso de productos de vapeo puede ser dañino para la salud.',
+        minAge: 18,
+        seedVersion: SEED_VERSION,
+        updatedAt: new Date()
+      }
+    },
+    { upsert: true }
+  )
 
-  // Categories
+  // Admin user (only if not present)
+  const adminExists = await database.collection('admin_users').findOne({ email: 'admin@clouddistrict.com' })
+  if (!adminExists) {
+    await database.collection('admin_users').insertOne({
+      id: uuidv4(),
+      email: 'admin@clouddistrict.com',
+      passwordHash: hashPassword('admin123'),
+      role: 'owner',
+      createdAt: new Date()
+    })
+  }
+
+  // Categories: only Vape + Mieles
   const cats = [
-    { name: 'Dispositivos', description: 'Mods, kits y dispositivos completos de última generación.', image: 'https://images.unsplash.com/photo-1545095088-26a59e3f2717?w=800' },
-    { name: 'Pods', description: 'Sistemas pod recargables y desechables para uso diario.', image: 'https://images.unsplash.com/photo-1524653736724-8490ee06859d?w=800' },
-    { name: 'Líquidos', description: 'Sabores premium en variedad de nicotina y VG/PG.', image: 'https://images.pexels.com/photos/11112669/pexels-photo-11112669.jpeg?w=800' },
-    { name: 'Accesorios', description: 'Baterías, cargadores, drip tips y más.', image: 'https://images.unsplash.com/photo-1556388275-bb5585725aca?w=800' },
-    { name: 'Repuestos', description: 'Coils, resistencias y refacciones originales.', image: 'https://images.pexels.com/photos/10102705/pexels-photo-10102705.jpeg?w=800' }
+    { name: 'Vape', description: 'Dispositivos, pods desechables y sistemas de vapeo de última generación.', image: 'https://images.unsplash.com/photo-1545095088-26a59e3f2717?w=800' },
+    { name: 'Mieles', description: 'Mieles artesanales y variedades premium seleccionadas.', image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=800' }
   ]
   const catDocs = cats.map((c, i) => ({
     id: uuidv4(),
@@ -100,32 +114,40 @@ async function ensureSeed(database) {
   }))
   await database.collection('categories').insertMany(catDocs)
 
-  const heroImg = 'https://images.unsplash.com/photo-1545095088-26a59e3f2717?w=1200'
-  const smokeImg = 'https://images.unsplash.com/photo-1536405416754-3bcd4fb38128?w=1200'
+  const vapeCat = catDocs.find(c => c.name === 'Vape')
+  const mielCat = catDocs.find(c => c.name === 'Mieles')
+  const vapeImgs = [
+    'https://images.unsplash.com/photo-1545095088-26a59e3f2717?w=1200',
+    'https://images.unsplash.com/photo-1536405416754-3bcd4fb38128?w=1200',
+    'https://images.pexels.com/photos/3545426/pexels-photo-3545426.jpeg?w=1200'
+  ]
+  const mielImgs = [
+    'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=1200',
+    'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=1200'
+  ]
 
-  // Products (10)
   const productSeeds = [
-    { name: 'Nebula Pro X', category: 'Dispositivos', price: 1299, oldPrice: 1499, tag: 'Nuevo', featured: true, sliderOrder: 0, stock: 15, desc: 'Mod avanzado con pantalla TFT, control de potencia hasta 80W y batería interna de 3000mAh.' },
-    { name: 'Aurora Pod Kit', category: 'Pods', price: 649, oldPrice: null, tag: 'Más vendido', featured: true, sliderOrder: 1, stock: 30, desc: 'Sistema pod compacto y elegante, ideal para uso diario. Batería recargable USB-C.' },
-    { name: 'Blue Ice 30ml', category: 'Líquidos', price: 220, oldPrice: 260, tag: 'Oferta', featured: true, sliderOrder: 2, stock: 50, desc: 'Sabor frutal con notas frescas de menta y arándano. 30ml, 35mg/ml de sal de nicotina.' },
-    { name: 'Titan Mod 200W', category: 'Dispositivos', price: 2199, oldPrice: null, tag: 'Nuevo', featured: true, sliderOrder: 3, stock: 8, desc: 'Doble batería 18650, potencia de hasta 200W y chip de última generación para mayor precisión.' },
-    { name: 'Coil Mesh 0.15Ω (5pcs)', category: 'Repuestos', price: 349, oldPrice: null, tag: null, featured: true, sliderOrder: 4, stock: 100, desc: 'Pack de 5 resistencias mesh compatibles con la mayoría de tanques sub-ohm.' },
-    { name: 'Purple Haze 60ml', category: 'Líquidos', price: 390, oldPrice: null, tag: null, featured: false, sliderOrder: null, stock: 25, desc: 'Blend de uva y mora silvestre, con toques de menta. Ideal para nubes densas.' },
-    { name: 'Charger Dual 18650', category: 'Accesorios', price: 480, oldPrice: 580, tag: 'Oferta', featured: false, sliderOrder: null, stock: 20, desc: 'Cargador inteligente para dos baterías 18650 con protección contra sobrecarga.' },
-    { name: 'Stealth Pod Mini', category: 'Pods', price: 490, oldPrice: null, tag: null, featured: false, sliderOrder: null, stock: 0, desc: 'Pod portátil ultra compacto de 400mAh, diseño discreto y batería de larga duración.' },
-    { name: 'Drip Tip Delrin', category: 'Accesorios', price: 149, oldPrice: null, tag: null, featured: false, sliderOrder: null, stock: 40, desc: 'Boquilla de material Delrin con excelente aislamiento térmico. Múltiples colores.' },
-    { name: 'Mango Freeze 30ml', category: 'Líquidos', price: 220, oldPrice: null, tag: 'Más vendido', featured: false, sliderOrder: null, stock: 60, desc: 'Mango tropical con toque helado. 35mg/ml de sal de nicotina, para pods.' }
+    { name: 'Nebula Pro X 40K', cat: 'Vape', price: 52, oldPrice: null, tag: 'Nuevo', featured: true, sliderOrder: 0, stock: 15, puffs: 40000, desc: 'Vape desechable premium con 40,000 puffs, pantalla LED, doble malla y batería recargable USB-C.' },
+    { name: 'Aurora 5K', cat: 'Vape', price: 18, oldPrice: 22, tag: 'Más vendido', featured: true, sliderOrder: 1, stock: 30, puffs: 5000, desc: 'Compacto y portátil con 5,000 puffs, sabor consistente y sistema mesh.' },
+    { name: 'Blue Ice 8K', cat: 'Vape', price: 15, oldPrice: null, tag: 'Oferta', featured: true, sliderOrder: 2, stock: 50, puffs: 8000, desc: 'Sabor arándano-menta helado, 8,000 puffs, recargable.' },
+    { name: 'Titan XL 25K', cat: 'Vape', price: 42, oldPrice: 48, tag: 'Nuevo', featured: true, sliderOrder: 3, stock: 8, puffs: 25000, desc: 'Formato XL con 25,000 puffs, pantalla digital y modo turbo/eco.' },
+    { name: 'Purple Haze 15K', cat: 'Vape', price: 28, oldPrice: null, tag: null, featured: true, sliderOrder: 4, stock: 40, puffs: 15000, desc: 'Blend de uva y mora silvestre. 15,000 puffs, nubes densas y sabor prolongado.' },
+    { name: 'Mango Freeze 10K', cat: 'Vape', price: 22, oldPrice: null, tag: 'Más vendido', featured: false, sliderOrder: null, stock: 60, puffs: 10000, desc: 'Mango tropical helado, 10,000 puffs, diseño slim.' },
+    { name: 'Stealth Mini 3K', cat: 'Vape', price: 12, oldPrice: null, tag: null, featured: false, sliderOrder: null, stock: 25, puffs: 3000, desc: 'Ultra portátil, 3,000 puffs, ideal para uso ocasional.' },
+    { name: 'Cool Mint XL 20K', cat: 'Vape', price: 35, oldPrice: 40, tag: 'Oferta', featured: false, sliderOrder: null, stock: 20, puffs: 20000, desc: 'Menta fresca cristalina, 20,000 puffs, battería de larga duración.' },
+    { name: 'Miel Silvestre 250g', cat: 'Mieles', price: 12, oldPrice: null, tag: null, featured: false, sliderOrder: null, stock: 40, puffs: null, desc: 'Miel silvestre 100% pura, cosechada en zonas montañosas. Frasco de 250g.' },
+    { name: 'Miel con Propóleo 200g', cat: 'Mieles', price: 16, oldPrice: 20, tag: 'Nuevo', featured: false, sliderOrder: null, stock: 30, puffs: null, desc: 'Miel enriquecida con propóleo, ideal para el sistema inmune. 200g.' }
   ]
 
   const now = new Date()
   const products = productSeeds.map((p, i) => {
-    const cat = catDocs.find(c => c.name === p.category)
-    const gallery = [heroImg, smokeImg, 'https://images.pexels.com/photos/3545426/pexels-photo-3545426.jpeg?w=1200']
+    const cat = p.cat === 'Vape' ? vapeCat : mielCat
+    const gallery = p.cat === 'Vape' ? vapeImgs : mielImgs
     return {
       id: uuidv4(),
       name: p.name,
       slug: slugify(p.name),
-      shortDescription: p.desc.slice(0, 90) + '...',
+      shortDescription: p.desc.slice(0, 90) + (p.desc.length > 90 ? '...' : ''),
       description: p.desc + ' Producto exclusivo para mayores de edad. Consulta stock y disponibilidad por WhatsApp.',
       price: p.price,
       oldPrice: p.oldPrice,
@@ -139,7 +161,10 @@ async function ensureSeed(database) {
       order: i,
       sliderOrder: p.sliderOrder,
       inSlider: p.sliderOrder !== null && p.sliderOrder !== undefined,
-      features: ['Producto original', 'Garantía del fabricante', 'Envío discreto', 'Soporte por WhatsApp'],
+      puffs: p.puffs,
+      features: p.cat === 'Vape'
+        ? ['Producto original', p.puffs ? `${p.puffs.toLocaleString()} puffs` : 'Alta duración', 'Garantía del fabricante', 'Envío discreto']
+        : ['Producto artesanal', '100% natural', 'Envasado de origen', 'Garantía de frescura'],
       images: gallery,
       views: Math.floor(Math.random() * 100),
       createdAt: now,
@@ -148,15 +173,14 @@ async function ensureSeed(database) {
   })
   await database.collection('products').insertMany(products)
 
-  // Banner
   await database.collection('banners').insertOne({
     id: uuidv4(),
-    title: 'Nueva colección Nebula',
-    text: 'Descubre los dispositivos de última generación con hasta 20% de descuento por lanzamiento.',
-    image: smokeImg,
+    title: 'Nueva colección 40K',
+    text: 'Descubre nuestra línea de vapeo desechable con hasta 40,000 puffs, diseño minimalista y máxima duración.',
+    image: vapeImgs[1],
     buttonText: 'Ver colección',
     link: '#productos',
-    gradient: 'from-purple-600 via-indigo-600 to-cyan-500',
+    gradient: 'from-zinc-800 via-zinc-900 to-black',
     active: true,
     createdAt: new Date()
   })
@@ -171,7 +195,6 @@ async function handleRoute(request, { params }) {
     const database = await connectToMongo()
     await ensureSeed(database)
 
-    // ============ AUTH ============
     if (route === '/auth/login' && method === 'POST') {
       const body = await request.json()
       const user = await database.collection('admin_users').findOne({ email: body.email })
@@ -197,7 +220,6 @@ async function handleRoute(request, { params }) {
       return cors(NextResponse.json({ ok: true }))
     }
 
-    // ============ SETTINGS ============
     if (route === '/settings' && method === 'GET') {
       const s = await database.collection('settings').findOne({ id: 'main' })
       if (s) delete s._id
@@ -214,7 +236,6 @@ async function handleRoute(request, { params }) {
       return cors(NextResponse.json(s))
     }
 
-    // ============ CATEGORIES ============
     if (route === '/categories' && method === 'GET') {
       const items = await database.collection('categories').find({}).sort({ order: 1 }).toArray()
       return cors(NextResponse.json(items.map(({ _id, ...r }) => r)))
@@ -222,16 +243,7 @@ async function handleRoute(request, { params }) {
     if (route === '/categories' && method === 'POST') {
       if (!(await requireAdmin(request))) return cors(NextResponse.json({ error: 'unauthorized' }, { status: 401 }))
       const body = await request.json()
-      const doc = {
-        id: uuidv4(),
-        name: body.name,
-        slug: slugify(body.name),
-        description: body.description || '',
-        image: body.image || '',
-        active: body.active !== false,
-        order: body.order || 0,
-        createdAt: new Date()
-      }
+      const doc = { id: uuidv4(), name: body.name, slug: slugify(body.name), description: body.description || '', image: body.image || '', active: body.active !== false, order: body.order || 0, createdAt: new Date() }
       await database.collection('categories').insertOne(doc)
       delete doc._id
       return cors(NextResponse.json(doc))
@@ -254,7 +266,6 @@ async function handleRoute(request, { params }) {
       return cors(NextResponse.json({ ok: true }))
     }
 
-    // ============ PRODUCTS ============
     if (route === '/products' && method === 'GET') {
       const url = new URL(request.url)
       const filter = {}
@@ -268,7 +279,6 @@ async function handleRoute(request, { params }) {
       if (inSlider === '1') filter.inSlider = true
       const search = url.searchParams.get('search')
       if (search) filter.name = { $regex: search, $options: 'i' }
-
       let cursor = database.collection('products').find(filter)
       const sort = url.searchParams.get('sort')
       if (sort === 'price-asc') cursor = cursor.sort({ price: 1 })
@@ -277,7 +287,6 @@ async function handleRoute(request, { params }) {
       else if (sort === 'featured') cursor = cursor.sort({ featured: -1, order: 1 })
       else if (inSlider === '1') cursor = cursor.sort({ sliderOrder: 1 })
       else cursor = cursor.sort({ order: 1 })
-
       const items = await cursor.toArray()
       return cors(NextResponse.json(items.map(({ _id, ...r }) => r)))
     }
@@ -314,6 +323,7 @@ async function handleRoute(request, { params }) {
         order: body.order || 0,
         sliderOrder: body.sliderOrder ?? null,
         inSlider: !!body.inSlider,
+        puffs: body.puffs ? Number(body.puffs) : null,
         features: body.features || [],
         images: body.images || [],
         views: 0,
@@ -341,7 +351,8 @@ async function handleRoute(request, { params }) {
         body.stockStatus = body.stock === 0 ? 'agotado' : body.stock < 10 ? 'ultimas-unidades' : 'disponible'
       }
       if (body.price !== undefined) body.price = Number(body.price)
-      if (body.oldPrice !== undefined && body.oldPrice !== null) body.oldPrice = Number(body.oldPrice)
+      if (body.oldPrice !== undefined && body.oldPrice !== null && body.oldPrice !== '') body.oldPrice = Number(body.oldPrice)
+      if (body.puffs !== undefined && body.puffs !== null && body.puffs !== '') body.puffs = Number(body.puffs)
       body.updatedAt = new Date()
       await database.collection('products').updateOne({ id }, { $set: body })
       const item = await database.collection('products').findOne({ id })
@@ -368,10 +379,9 @@ async function handleRoute(request, { params }) {
       return cors(NextResponse.json({ ok: true }))
     }
 
-    // ============ SLIDER ============
     if (route === '/slider' && method === 'PUT') {
       if (!(await requireAdmin(request))) return cors(NextResponse.json({ error: 'unauthorized' }, { status: 401 }))
-      const body = await request.json() // { items: [{id, order}], removedIds: [] }
+      const body = await request.json()
       if (body.removedIds && Array.isArray(body.removedIds)) {
         for (const id of body.removedIds) {
           await database.collection('products').updateOne({ id }, { $set: { inSlider: false, sliderOrder: null } })
@@ -385,7 +395,6 @@ async function handleRoute(request, { params }) {
       return cors(NextResponse.json({ ok: true }))
     }
 
-    // ============ BANNERS ============
     if (route === '/banners' && method === 'GET') {
       const items = await database.collection('banners').find({}).sort({ createdAt: -1 }).toArray()
       return cors(NextResponse.json(items.map(({ _id, ...r }) => r)))
@@ -393,17 +402,7 @@ async function handleRoute(request, { params }) {
     if (route === '/banners' && method === 'POST') {
       if (!(await requireAdmin(request))) return cors(NextResponse.json({ error: 'unauthorized' }, { status: 401 }))
       const body = await request.json()
-      const doc = {
-        id: uuidv4(),
-        title: body.title || '',
-        text: body.text || '',
-        image: body.image || '',
-        buttonText: body.buttonText || 'Ver más',
-        link: body.link || '#',
-        gradient: body.gradient || 'from-purple-600 via-indigo-600 to-cyan-500',
-        active: body.active !== false,
-        createdAt: new Date()
-      }
+      const doc = { id: uuidv4(), title: body.title || '', text: body.text || '', image: body.image || '', buttonText: body.buttonText || 'Ver más', link: body.link || '#', gradient: body.gradient || 'from-zinc-800 via-zinc-900 to-black', active: body.active !== false, createdAt: new Date() }
       await database.collection('banners').insertOne(doc)
       delete doc._id
       return cors(NextResponse.json(doc))
@@ -425,24 +424,13 @@ async function handleRoute(request, { params }) {
       return cors(NextResponse.json({ ok: true }))
     }
 
-    // ============ WHATSAPP CLICKS ============
     if (route === '/whatsapp-click' && method === 'POST') {
       const body = await request.json().catch(() => ({}))
-      await database.collection('whatsapp_clicks').insertOne({
-        id: uuidv4(),
-        productId: body.productId || null,
-        productName: body.productName || null,
-        source: body.source || 'unknown',
-        device: body.device || 'unknown',
-        createdAt: new Date()
-      })
-      if (body.productId) {
-        await database.collection('products').updateOne({ id: body.productId }, { $inc: { views: 1 } })
-      }
+      await database.collection('whatsapp_clicks').insertOne({ id: uuidv4(), productId: body.productId || null, productName: body.productName || null, source: body.source || 'unknown', device: body.device || 'unknown', createdAt: new Date() })
+      if (body.productId) await database.collection('products').updateOne({ id: body.productId }, { $inc: { views: 1 } })
       return cors(NextResponse.json({ ok: true }))
     }
 
-    // ============ DASHBOARD STATS ============
     if (route === '/stats' && method === 'GET') {
       if (!(await requireAdmin(request))) return cors(NextResponse.json({ error: 'unauthorized' }, { status: 401 }))
       const [totalProducts, activeProducts, outOfStock, featured, totalCategories, totalClicks] = await Promise.all([
@@ -468,7 +456,6 @@ async function handleRoute(request, { params }) {
         { $sort: { count: -1 } },
         { $limit: 8 }
       ]).toArray()
-
       return cors(NextResponse.json({
         totalProducts, activeProducts, outOfStock, featured, totalCategories, totalClicks,
         topProducts: topProducts.map(({ _id, ...r }) => r),
@@ -479,7 +466,6 @@ async function handleRoute(request, { params }) {
     }
 
     if (route === '/root' && method === 'GET') return cors(NextResponse.json({ message: 'Cloud District API' }))
-
     return cors(NextResponse.json({ error: 'Route ' + route + ' not found' }, { status: 404 }))
   } catch (error) {
     console.error('API Error:', error)
