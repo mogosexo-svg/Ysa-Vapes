@@ -65,8 +65,8 @@ function Header({ settings, onSearch, searchQuery }) {
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all ${scrolled ? 'glass-strong py-3' : 'py-5'}`}>
       <div className="container mx-auto px-4 flex items-center gap-4">
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-violet-500 via-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-            <Wind className="h-5 w-5 text-white" />
+          <div className="h-9 w-9 rounded-lg bg-gradient-to-b from-zinc-700 to-zinc-900 border border-white/10 flex items-center justify-center shadow-md shadow-black/40">
+            <Wind className="h-5 w-5 text-zinc-100" />
           </div>
           <span className="font-semibold text-lg tracking-tight">{settings?.storeName || 'Cloud District'}</span>
         </Link>
@@ -177,7 +177,7 @@ function ProductCard({ product, settings }) {
         <Link href={`/products/${product.slug}`} className="block relative aspect-square overflow-hidden bg-zinc-950">
           <img src={product.images?.[0] || 'https://images.unsplash.com/photo-1545095088-26a59e3f2717?w=600'} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-            {product.tag && <Badge className="bg-gradient-to-r from-violet-500 to-indigo-500 text-white border-0 font-medium text-[10px]">{product.tag}</Badge>}
+            {product.tag && <Badge className="bg-gradient-to-b from-zinc-200 to-zinc-400 text-black border-0 font-medium text-[10px]">{product.tag}</Badge>}
             {discount > 0 && <Badge className="bg-black/70 backdrop-blur-md text-white border border-white/10 font-medium text-[10px]">-{discount}%</Badge>}
           </div>
           {product.puffs && <Badge className="absolute top-3 right-3 glass border-white/10 text-white/90 text-[10px]">{(product.puffs/1000)}K puffs</Badge>}
@@ -387,8 +387,8 @@ function Benefits() {
           {items.map((it, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} viewport={{ once: true }}>
               <Card className="glass border-white/8 p-6 h-full">
-                <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-violet-500/20 via-indigo-500/20 to-cyan-500/20 border border-white/10 flex items-center justify-center mb-4">
-                  <it.icon className="h-5 w-5 text-violet-200" />
+                <div className="h-11 w-11 rounded-lg silver-icon flex items-center justify-center mb-4">
+                  <it.icon className="h-5 w-5 text-zinc-200" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">{it.title}</h3>
                 <p className="text-sm text-white/55">{it.text}</p>
@@ -428,7 +428,7 @@ function Footer({ settings }) {
         <div className="grid md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-violet-500 via-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/25"><Wind className="h-5 w-5 text-white" /></div>
+              <div className="h-9 w-9 rounded-lg bg-gradient-to-b from-zinc-700 to-zinc-900 border border-white/10 flex items-center justify-center"><Wind className="h-5 w-5 text-zinc-100" /></div>
               <span className="font-semibold text-lg">{settings?.storeName || 'Cloud District'}</span>
             </div>
             <p className="text-sm text-white/55 max-w-xs">{settings?.footerText}</p>

@@ -46,7 +46,7 @@ async function requireAdmin(request) {
   return session
 }
 
-const SEED_VERSION = 'v4'
+const SEED_VERSION = 'v5'
 let seedInProgress = null
 
 async function ensureSeed(database) {
@@ -195,7 +195,7 @@ async function runSeed(database) {
     image: vapeImgs[1],
     buttonText: 'Ver colección',
     link: '#productos',
-    gradient: 'from-violet-600 via-indigo-600 to-cyan-500',
+    gradient: 'from-zinc-700 via-zinc-800 to-zinc-950',
     active: true,
     createdAt: new Date()
   })

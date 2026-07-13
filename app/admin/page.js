@@ -569,10 +569,10 @@ function BannersView() {
   }
 
   const gradients = [
-    'from-purple-600 via-indigo-600 to-cyan-500',
-    'from-pink-500 via-purple-500 to-indigo-600',
-    'from-blue-600 via-cyan-500 to-emerald-500',
-    'from-orange-500 via-red-500 to-purple-600',
+    'from-zinc-700 via-zinc-800 to-zinc-950',
+    'from-neutral-600 via-neutral-800 to-black',
+    'from-slate-600 via-slate-800 to-slate-950',
+    'from-stone-600 via-stone-800 to-stone-950',
   ]
 
   return (
