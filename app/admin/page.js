@@ -13,11 +13,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
-import { LayoutDashboard, Package, Grid3x3, Sliders, Image as ImageIcon, Settings, LogOut, Plus, Search, Pencil, Trash2, Copy, Upload, X, Sparkles, TrendingUp, MessageCircle, Eye, Star, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Package, Grid3x3, Sliders, Image as ImageIcon, Settings, LogOut, Plus, Search, Pencil, Trash2, Copy, Upload, X, Sparkles, TrendingUp, MessageCircle, Eye, Star, ArrowUp, ArrowDown, ChevronRight, Sun, Moon } from 'lucide-react'
 import { apiFetch, getToken, setToken } from '@/lib/api'
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from 'recharts'
 
 const COLORS = ['#a855f7', '#6366f1', '#06b6d4', '#8b5cf6', '#3b82f6']
+
+function ThemeToggle() {
+  const [theme, setTheme] = useState('dark')
+  useEffect(() => {
+    setTheme(document.documentElement.classList.contains('light') ? 'light' : 'dark')
+  }, [])
+  const toggle = () => {
+    const next = theme === 'light' ? 'dark' : 'light'
+    document.documentElement.classList.remove('light', 'dark')
+    document.documentElement.classList.add(next)
+    try { localStorage.setItem('cd_theme', next) } catch {}
+    setTheme(next)
+  }
+  return (
+    <button onClick={toggle} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/60 hover:bg-white/5 hover:text-white">
+      {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      {theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+    </button>
+  )
+}
 
 function LoginView({ onLogin }) {
   const [email, setEmail] = useState('admin@clouddistrict.com')
@@ -729,7 +749,8 @@ function AdminApp() {
             </button>
           ))}
         </nav>
-        <div className="p-3 border-t border-white/10">
+        <div className="p-3 border-t border-white/10 space-y-1">
+          <ThemeToggle />
           <button onClick={logout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/60 hover:bg-white/5 hover:text-white"><LogOut className="h-4 w-4" /> Cerrar sesión</button>
         </div>
       </aside>

@@ -12,8 +12,27 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Slider } from '@/components/ui/slider'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Menu, Search, ChevronLeft, ChevronRight, MessageCircle, Instagram, Facebook, MapPin, Clock, ShieldCheck, Zap, Package, Headphones, X, ArrowRight, Circle, Lock, Wind } from 'lucide-react'
+import { Menu, Search, ChevronLeft, ChevronRight, MessageCircle, Instagram, Facebook, MapPin, Clock, ShieldCheck, Zap, Package, Headphones, X, ArrowRight, Circle, Lock, Wind, Sun, Moon } from 'lucide-react'
 import { apiFetch, openWhatsApp, buildProductMessage, trackWhatsAppClick } from '@/lib/api'
+
+function ThemeToggle() {
+  const [theme, setTheme] = useState('dark')
+  useEffect(() => {
+    setTheme(document.documentElement.classList.contains('light') ? 'light' : 'dark')
+  }, [])
+  const toggle = () => {
+    const next = theme === 'light' ? 'dark' : 'light'
+    document.documentElement.classList.remove('light', 'dark')
+    document.documentElement.classList.add(next)
+    try { localStorage.setItem('cd_theme', next) } catch {}
+    setTheme(next)
+  }
+  return (
+    <Button variant="ghost" size="icon" onClick={toggle} className="h-9 w-9" title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}>
+      {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    </Button>
+  )
+}
 
 function AgeGate({ onConfirm }) {
   const [open, setOpen] = useState(false)
@@ -94,6 +113,8 @@ function Header({ settings, onSearch, searchQuery }) {
           <Link href="/admin"><Lock className="h-4 w-4" /> Iniciar sesión</Link>
         </Button>
 
+        <ThemeToggle />
+
         <Button onClick={() => { trackWhatsAppClick({ source: 'header' }); openWhatsApp({ number: settings?.whatsappNumber, message: settings?.whatsappMessage }) }} className="hidden sm:inline-flex btn-primary-tesla h-9 gap-2 font-medium">
           <MessageCircle className="h-4 w-4" /> WhatsApp
         </Button>
@@ -112,6 +133,7 @@ function Header({ settings, onSearch, searchQuery }) {
                 <a key={n.href} href={n.href} onClick={() => setMenuOpen(false)} className="text-lg text-white/80 hover:text-white">{n.label}</a>
               ))}
               <Link href="/admin" onClick={() => setMenuOpen(false)} className="text-lg text-white/80 hover:text-white flex items-center gap-2"><Lock className="h-4 w-4" /> Iniciar sesión</Link>
+              <div className="flex items-center gap-2"><ThemeToggle /> <span className="text-sm text-white/60">Cambiar tema</span></div>
               <Button onClick={() => { openWhatsApp({ number: settings?.whatsappNumber, message: settings?.whatsappMessage }); setMenuOpen(false) }} className="btn-primary-tesla gap-2"><MessageCircle className="h-4 w-4" /> WhatsApp</Button>
             </div>
           </SheetContent>
@@ -178,7 +200,7 @@ function ProductCard({ product, settings }) {
           <img src={product.images?.[0] || 'https://images.unsplash.com/photo-1545095088-26a59e3f2717?w=600'} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">
             {product.tag && <Badge className="bg-gradient-to-b from-zinc-200 to-zinc-400 text-black border-0 font-medium text-[10px]">{product.tag}</Badge>}
-            {discount > 0 && <Badge className="bg-black/70 backdrop-blur-md text-white border border-white/10 font-medium text-[10px]">-{discount}%</Badge>}
+            {discount > 0 && <Badge className="bg-black/75 backdrop-blur-md always-white border border-white/10 font-medium text-[10px]">-{discount}%</Badge>}
           </div>
           {product.puffs && <Badge className="absolute top-3 right-3 glass border-white/10 text-white/90 text-[10px]">{(product.puffs/1000)}K puffs</Badge>}
           {soldOut && <div className="absolute inset-0 bg-black/70 flex items-center justify-center"><Badge variant="destructive" className="text-sm">AGOTADO</Badge></div>}
@@ -409,9 +431,9 @@ function PromoBanner({ banner }) {
         <div className={`relative rounded-3xl overflow-hidden bg-gradient-to-r ${banner.gradient} p-8 md:p-16 border border-white/10`}>
           <div className="absolute inset-0 opacity-25"><img src={banner.image} alt="" className="w-full h-full object-cover" /></div>
           <div className="relative z-10 max-w-2xl">
-            <h2 className="text-3xl md:text-5xl font-semibold text-white mb-4">{banner.title}</h2>
-            <p className="text-white/80 text-lg mb-8">{banner.text}</p>
-            <Button asChild size="lg" className="btn-primary-tesla font-semibold">
+            <h2 className="text-3xl md:text-5xl font-semibold always-white mb-4">{banner.title}</h2>
+            <p className="text-lg mb-8" style={{ color: 'rgba(255,255,255,0.82)' }}>{banner.text}</p>
+            <Button asChild size="lg" className="bg-white text-black hover:bg-zinc-100 font-semibold">
               <a href={banner.link}>{banner.buttonText} <ArrowRight className="ml-2 h-4 w-4" /></a>
             </Button>
           </div>
@@ -446,7 +468,7 @@ function Footer({ settings }) {
               <a href={settings?.instagram} target="_blank" rel="noreferrer" className="h-10 w-10 rounded-full glass border-white/10 flex items-center justify-center hover:bg-white/10"><Instagram className="h-4 w-4" /></a>
               <a href={settings?.facebook} target="_blank" rel="noreferrer" className="h-10 w-10 rounded-full glass border-white/10 flex items-center justify-center hover:bg-white/10"><Facebook className="h-4 w-4" /></a>
               <a href={settings?.tiktok} target="_blank" rel="noreferrer" className="h-10 w-10 rounded-full glass border-white/10 flex items-center justify-center hover:bg-white/10 text-xs font-bold">TT</a>
-              <button onClick={() => { trackWhatsAppClick({ source: 'footer' }); openWhatsApp({ number: settings?.whatsappNumber, message: settings?.whatsappMessage }) }} className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/90"><MessageCircle className="h-4 w-4" /></button>
+              <button onClick={() => { trackWhatsAppClick({ source: 'footer' }); openWhatsApp({ number: settings?.whatsappNumber, message: settings?.whatsappMessage }) }} className="h-10 w-10 rounded-full btn-primary-tesla flex items-center justify-center"><MessageCircle className="h-4 w-4" /></button>
             </div>
           </div>
           <div>
