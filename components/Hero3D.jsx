@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Float, Environment, ContactShadows, PresentationControls, Sparkles, useGLTF, Center } from '@react-three/drei'
+import { Float, Environment, ContactShadows, PresentationControls, Sparkles, useGLTF, Center, GradientTexture } from '@react-three/drei'
 
 function Model() {
   // Cargamos el modelo GLB de VERA desde la carpeta public
@@ -10,15 +10,29 @@ function Model() {
   
   // Usamos el hook useRef para animar la rotación lentamente
   const groupRef = useRef()
+  const meshRef = useRef()
+  
   useFrame((state, delta) => {
     if (groupRef.current) {
       groupRef.current.rotation.y += delta * 0.2 // Rotación constante muy sutil
+    }
+    if (meshRef.current) {
+      meshRef.current.rotation.x -= delta * 0.15
+      meshRef.current.rotation.y -= delta * 0.1
     }
   })
 
   return (
     <group ref={groupRef}>
-      <Center scale={1.5}>
+      {/* Malla exterior verde a rojo */}
+      <mesh ref={meshRef} scale={4}>
+        <icosahedronGeometry args={[1, 1]} />
+        <meshBasicMaterial wireframe transparent opacity={0.3}>
+          <GradientTexture stops={[0, 1]} colors={['#10b981', '#ef4444']} />
+        </meshBasicMaterial>
+      </mesh>
+      
+      <Center scale={3.5}>
         <primitive object={scene} />
       </Center>
     </group>
