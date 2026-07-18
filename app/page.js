@@ -162,9 +162,9 @@ function Hero({ settings }) {
       <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center relative z-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
           <Badge className="mb-6 glass border-white/10 text-white/70 px-3 py-1 gap-1.5 font-normal"><Circle className="h-2 w-2 fill-white/80" /> Nueva colección 40K disponible</Badge>
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight mb-6 leading-[1.05]">
-            Descubre una<br />
-            <span className="gradient-text">nueva experiencia</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight mb-6 leading-[1.05]">
+            Prueba nuestro modelo más vendido<br />
+            <span className="gradient-text">el vape VERA 22k</span>
           </h1>
           <p className="text-lg text-white/60 mb-8 max-w-lg">
             Vape desechable premium hasta 40,000 puffs y mieles artesanales seleccionadas. Todo lo que buscas, en un solo lugar.
