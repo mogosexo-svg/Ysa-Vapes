@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import Spline from '@splinetool/react-spline/next'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -181,12 +180,10 @@ function Hero({ settings }) {
           </div>
         </motion.div>
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="relative">
-          <div className="relative aspect-square max-w-lg mx-auto w-full h-[500px]">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/0 blur-3xl rounded-full pointer-events-none" />
-            <div className="relative w-full h-full rounded-3xl border border-white/10 subtle-glow overflow-hidden bg-black/40">
-              <Spline scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" className="w-full h-full" />
-            </div>
-          </div>
+          <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} className="relative aspect-square max-w-lg mx-auto">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/0 blur-3xl rounded-full" />
+            <img src={heroImg} alt="device" className="relative w-full h-full object-cover rounded-3xl border border-white/10 subtle-glow" />
+          </motion.div>
         </motion.div>
       </div>
     </section>
