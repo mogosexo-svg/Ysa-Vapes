@@ -101,11 +101,11 @@ async function runSeed(database) {
   )
 
   // Admin user (only if not present)
-  const adminExists = await database.collection('admin_users').findOne({ email: 'admin@clouddistrict.com' })
+  const adminExists = await database.collection('admin_users').findOne({ email: 'admin@gmail.com' })
   if (!adminExists) {
     await database.collection('admin_users').insertOne({
       id: uuidv4(),
-      email: 'admin@clouddistrict.com',
+      email: 'admin@gmail.com',
       passwordHash: hashPassword('admin123'),
       role: 'owner',
       createdAt: new Date()

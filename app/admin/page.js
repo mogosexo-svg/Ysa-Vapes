@@ -40,7 +40,7 @@ function ThemeToggle() {
 }
 
 function LoginView({ onLogin }) {
-  const [email, setEmail] = useState('admin@clouddistrict.com')
+  const [email, setEmail] = useState('admin@gmail.com')
   const [password, setPassword] = useState('admin123')
   const [loading, setLoading] = useState(false)
 
@@ -80,7 +80,7 @@ function LoginView({ onLogin }) {
             <Button onClick={handleLogin} disabled={loading} className="w-full h-11 btn-primary-tesla font-semibold">
               {loading ? 'Ingresando...' : 'Ingresar'}
             </Button>
-            <p className="text-xs text-white/40 text-center">Default: admin@clouddistrict.com / admin123</p>
+            <p className="text-xs text-white/40 text-center">Default: admin@gmail.com / admin123</p>
           </div>
         </Card>
       </motion.div>
@@ -272,7 +272,7 @@ function ProductFormDialog({ open, onClose, product, categories, onSaved }) {
           </div>
           <div className="md:col-span-2">
             <Label>Características (una por línea)</Label>
-            <Textarea value={(form.features || []).join('\n')} onChange={e => setForm({ ...form, features: e.target.value.split('\n').filter(Boolean) })} className="glass border-white/10 mt-1" />
+            <Textarea value={form.featuresRaw !== undefined ? form.featuresRaw : (form.features || []).join('\n')} onChange={e => setForm({ ...form, featuresRaw: e.target.value, features: e.target.value.split('\n').filter(Boolean) })} className="glass border-white/10 mt-1" />
           </div>
           <div className="md:col-span-2">
             <Label>Imágenes (hasta 5)</Label>
