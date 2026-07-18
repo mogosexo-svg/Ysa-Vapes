@@ -18,7 +18,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Slider } from '@/components/ui/slider'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Menu, Search, ChevronLeft, ChevronRight, MessageCircle, Instagram, Facebook, MapPin, Clock, ShieldCheck, Zap, Package, Headphones, X, ArrowRight, Circle, Lock, Wind, Sun, Moon } from 'lucide-react'
+import { Menu, Search, ChevronLeft, ChevronRight, MessageCircle, Instagram, Facebook, MapPin, Clock, ShieldCheck, Zap, Package, Headphones, X, ArrowRight, Circle, Lock, Wind, Sun, Moon, Check, Sparkles } from 'lucide-react'
 import { apiFetch, openWhatsApp, buildProductMessage, trackWhatsAppClick } from '@/lib/api'
 
 function ThemeToggle() {
@@ -197,38 +197,97 @@ function Hero({ settings }) {
 }
 
 function ProductCard({ product, settings }) {
+  const [open, setOpen] = useState(false)
+  const [selectedImg, setSelectedImg] = useState(0)
   const soldOut = product.stock === 0
   const discount = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0
   return (
-    <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
-      <Card className="glass border-white/8 overflow-hidden group h-full flex flex-col card-hover">
-        <Link href={`/products/${product.slug}`} className="block relative aspect-square overflow-hidden bg-zinc-950">
-          <img src={product.images?.[0] || 'https://images.unsplash.com/photo-1545095088-26a59e3f2717?w=600'} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-            {product.tag && <Badge className="bg-gradient-to-b from-zinc-200 to-zinc-400 text-black border-0 font-medium text-[10px]">{product.tag}</Badge>}
-            {discount > 0 && <Badge className="bg-black/75 backdrop-blur-md always-white border border-white/10 font-medium text-[10px]">-{discount}%</Badge>}
+    <>
+      <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }} onClick={() => setOpen(true)} className="cursor-pointer h-full">
+        <Card className="glass border-white/8 overflow-hidden group h-full flex flex-col card-hover">
+          <div className="block relative aspect-square overflow-hidden bg-zinc-950">
+            <img src={product.images?.[0] || 'https://images.unsplash.com/photo-1545095088-26a59e3f2717?w=600'} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+              {product.tag && <Badge className="bg-gradient-to-b from-zinc-200 to-zinc-400 text-black border-0 font-medium text-[10px]">{product.tag}</Badge>}
+              {discount > 0 && <Badge className="bg-black/75 backdrop-blur-md always-white border border-white/10 font-medium text-[10px]">-{discount}%</Badge>}
+            </div>
+            {product.puffs && <Badge className="absolute top-3 right-3 glass border-white/10 text-white/90 text-[10px]">{(product.puffs/1000)}K puffs</Badge>}
+            {soldOut && <div className="absolute inset-0 bg-black/70 flex items-center justify-center"><Badge variant="destructive" className="text-sm">AGOTADO</Badge></div>}
           </div>
-          {product.puffs && <Badge className="absolute top-3 right-3 glass border-white/10 text-white/90 text-[10px]">{(product.puffs/1000)}K puffs</Badge>}
-          {soldOut && <div className="absolute inset-0 bg-black/70 flex items-center justify-center"><Badge variant="destructive" className="text-sm">AGOTADO</Badge></div>}
-        </Link>
-        <div className="p-4 flex flex-col flex-1">
-          <div className="text-[11px] text-white/50 uppercase tracking-wider mb-1">{product.categoryName}</div>
-          <Link href={`/products/${product.slug}`}><h3 className="font-semibold text-white hover:text-white/80 transition-colors line-clamp-1">{product.name}</h3></Link>
-          <div className="flex items-baseline gap-2 mt-2">
-            <span className="text-lg font-semibold text-white">${product.price}</span>
-            {product.oldPrice && <span className="text-sm text-white/40 line-through">${product.oldPrice}</span>}
+          <div className="p-4 flex flex-col flex-1">
+            <div className="text-[11px] text-white/50 uppercase tracking-wider mb-1">{product.categoryName}</div>
+            <h3 className="font-semibold text-white hover:text-white/80 transition-colors line-clamp-1">{product.name}</h3>
+            <div className="flex items-baseline gap-2 mt-2">
+              <span className="text-lg font-semibold text-white">${product.price}</span>
+              {product.oldPrice && <span className="text-sm text-white/40 line-through">${product.oldPrice}</span>}
+            </div>
+            <div className="flex items-center gap-1.5 mt-1 text-xs">
+              <span className={`h-1.5 w-1.5 rounded-full ${soldOut ? 'bg-red-500' : product.stockStatus === 'ultimas-unidades' ? 'bg-amber-400' : 'bg-emerald-500'}`} />
+              <span className="text-white/50">{soldOut ? 'Agotado' : product.stockStatus === 'ultimas-unidades' ? 'Últimas unidades' : 'Disponible'}</span>
+            </div>
+            <div className="flex gap-2 mt-4" onClick={e => e.stopPropagation()}>
+              <Button size="sm" variant="outline" className="flex-1 border-white/10 hover:bg-white/5 text-xs" onClick={() => setOpen(true)}>Ver detalles</Button>
+              <Button size="sm" onClick={() => { const url = window.location.origin; trackWhatsAppClick({ productId: product.id, productName: product.name, source: 'card' }); openWhatsApp({ number: settings?.whatsappNumber, message: buildProductMessage(product, url) }) }} className="btn-primary-tesla text-xs px-3"><MessageCircle className="h-3.5 w-3.5" /></Button>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5 mt-1 text-xs">
-            <span className={`h-1.5 w-1.5 rounded-full ${soldOut ? 'bg-red-500' : product.stockStatus === 'ultimas-unidades' ? 'bg-amber-400' : 'bg-emerald-500'}`} />
-            <span className="text-white/50">{soldOut ? 'Agotado' : product.stockStatus === 'ultimas-unidades' ? 'Últimas unidades' : 'Disponible'}</span>
+        </Card>
+      </motion.div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-4xl glass-strong border-white/10 p-0 overflow-hidden bg-[#09090b]">
+          <div className="grid md:grid-cols-2">
+            {/* Gallery */}
+            <div className="p-6 md:p-8 bg-black/40">
+              <div className="aspect-square rounded-3xl overflow-hidden glass border-white/10 mb-4">
+                <img src={product.images?.[selectedImg] || product.images?.[0] || 'https://images.unsplash.com/photo-1545095088-26a59e3f2717?w=600'} alt={product.name} className="w-full h-full object-cover" />
+              </div>
+              {product.images && product.images.length > 1 && (
+                <div className="grid grid-cols-5 gap-2">
+                  {product.images.slice(0, 5).map((img, i) => (
+                    <button key={i} onClick={() => setSelectedImg(i)} className={`aspect-square rounded-xl overflow-hidden border-2 ${selectedImg === i ? 'border-purple-500' : 'border-white/10'}`}>
+                      <img src={img} className="w-full h-full object-cover" alt="" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Details */}
+            <div className="p-6 md:p-8 flex flex-col justify-center max-h-[80vh] overflow-y-auto custom-scrollbar">
+              <div className="flex items-center gap-2 text-sm text-white/60 mb-2"><span>{product.categoryName}</span><ChevronRight className="h-3 w-3" /><span className="text-white">{product.name}</span></div>
+              <div className="flex gap-2 mb-4">
+                {product.tag && <Badge className="bg-gradient-to-r from-purple-600 to-indigo-600 border-0">{product.tag}</Badge>}
+                {discount > 0 && <Badge className="bg-red-500/90 border-0">-{discount}%</Badge>}
+              </div>
+              <h2 className="text-3xl md:text-4xl font-black tracking-tight mb-4">{product.name}</h2>
+              <div className="flex items-baseline gap-3 mb-6">
+                <span className="text-3xl font-black gradient-text">${product.price}</span>
+                {product.oldPrice && <span className="text-lg text-white/40 line-through">${product.oldPrice}</span>}
+              </div>
+              <div className="flex items-center gap-2 mb-6 text-sm">
+                <span className={`h-2 w-2 rounded-full ${soldOut ? 'bg-red-500' : product.stockStatus === 'ultimas-unidades' ? 'bg-amber-400' : 'bg-emerald-500'}`} />
+                <span className="text-white/80">{soldOut ? 'Agotado' : product.stockStatus === 'ultimas-unidades' ? 'Últimas unidades disponibles' : 'Disponible'}</span>
+              </div>
+              <p className="text-white/70 leading-relaxed mb-8">{product.description}</p>
+
+              {product.features && product.features.length > 0 && (
+                <div className="glass border-white/10 rounded-2xl p-6 mb-8">
+                  <h3 className="font-semibold mb-4 flex items-center gap-2"><Sparkles className="h-4 w-4 text-purple-400" /> Características</h3>
+                  <ul className="space-y-2">
+                    {product.features.map((f, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-white/80"><Check className="h-4 w-4 mt-0.5 text-cyan-400 shrink-0" />{f}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <Button size="lg" onClick={() => { const url = window.location.origin; trackWhatsAppClick({ productId: product.id, productName: product.name, source: 'product-modal' }); openWhatsApp({ number: settings?.whatsappNumber, message: buildProductMessage(product, url) }) }} className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-90 text-lg font-semibold gap-2 neon-glow mt-auto">
+                <MessageCircle className="h-5 w-5" /> Consultar por WhatsApp
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2 mt-4">
-            <Button asChild size="sm" variant="outline" className="flex-1 border-white/10 hover:bg-white/5 text-xs"><Link href={`/products/${product.slug}`}>Ver detalles</Link></Button>
-            <Button size="sm" onClick={() => { const url = window.location.origin; trackWhatsAppClick({ productId: product.id, productName: product.name, source: 'card' }); openWhatsApp({ number: settings?.whatsappNumber, message: buildProductMessage(product, url) }) }} className="btn-primary-tesla text-xs px-3"><MessageCircle className="h-3.5 w-3.5" /></Button>
-          </div>
-        </div>
-      </Card>
-    </motion.div>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
