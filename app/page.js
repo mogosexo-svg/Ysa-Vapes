@@ -2,14 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-
-const Spline = dynamic(() => import('@splinetool/react-spline'), {
-  ssr: false,
-  loading: () => <div className="absolute inset-0 flex items-center justify-center bg-transparent"><div className="w-8 h-8 border-4 border-white/20 border-t-white/80 rounded-full animate-spin" /></div>
-})
+import Spline from '@splinetool/react-spline/next'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
