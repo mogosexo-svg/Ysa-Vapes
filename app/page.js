@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { Button } from '@/components/ui/button'
+
+const Hero3D = dynamic(() => import('@/components/Hero3D'), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 flex items-center justify-center bg-transparent"><div className="w-8 h-8 border-4 border-white/20 border-t-white/80 rounded-full animate-spin" /></div>
+})
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -180,10 +186,10 @@ function Hero({ settings }) {
           </div>
         </motion.div>
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="relative">
-          <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} className="relative aspect-square max-w-lg mx-auto">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/0 blur-3xl rounded-full" />
-            <img src={heroImg} alt="device" className="relative w-full h-full object-cover rounded-3xl border border-white/10 subtle-glow" />
-          </motion.div>
+          <div className="relative aspect-square max-w-lg mx-auto w-full h-[500px]">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/0 blur-3xl rounded-full pointer-events-none" />
+            <Hero3D />
+          </div>
         </motion.div>
       </div>
     </section>
