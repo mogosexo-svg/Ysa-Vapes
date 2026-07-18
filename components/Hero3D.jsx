@@ -41,8 +41,8 @@ function Model() {
 
 export default function Hero3D() {
   return (
-    <div className="w-full h-full min-h-[400px] md:h-[500px] cursor-grab active:cursor-grabbing">
-      <Canvas camera={{ position: [0, 0, 7], fov: 45 }} dpr={[1, 2]}>
+    <div className="w-full h-full min-h-[500px] lg:min-h-[700px] cursor-grab active:cursor-grabbing">
+      <Canvas camera={{ position: [0, 0, 11], fov: 45 }} dpr={[1, 2]}>
         <ambientLight intensity={0.8} />
         <spotLight position={[10, 10, 10]} angle={0.25} penumbra={1} intensity={1.5} />
         <pointLight position={[-10, -10, -10]} intensity={1} color="#4466ff" />

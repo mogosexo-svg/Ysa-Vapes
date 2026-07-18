@@ -185,8 +185,8 @@ function Hero({ settings }) {
             <div><span className="text-white font-semibold text-2xl">100%</span><br />Original</div>
           </div>
         </motion.div>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="relative">
-          <div className="relative aspect-square max-w-lg mx-auto w-full h-[500px]">
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="relative w-full">
+          <div className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] flex items-center justify-center">
             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/0 blur-3xl rounded-full pointer-events-none" />
             <Hero3D />
           </div>
