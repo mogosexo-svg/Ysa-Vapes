@@ -5,9 +5,9 @@ import { Toaster } from '@/components/ui/sonner'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata = {
-  title: 'Cloud District — Vapeo Premium',
-  description: 'Tienda premium de vapeo. Vape desechable hasta 40K puffs y mieles artesanales. Exclusivo para mayores de edad.',
-  keywords: 'vape, vapeo, pods, mieles, cloud district',
+  title: 'Ysa-vapes - Vapeo Premium',
+  description: 'Tienda de vapeo y productos premium.',
+  keywords: 'vape, vapeo, pods, mieles, ysa vapes',
 }
 
 const themeInit = `

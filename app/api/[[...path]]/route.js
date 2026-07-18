@@ -78,7 +78,7 @@ async function runSeed(database) {
     {
       $set: {
         id: 'main',
-        storeName: 'Cloud District',
+        storeName: 'Ysa-vapes',
         logoUrl: '',
         whatsappNumber: '525555555555',
         whatsappMessage: 'Hola, quisiera recibir información sobre sus productos.',
@@ -480,7 +480,7 @@ async function handleRoute(request, { params }) {
       }))
     }
 
-    if (route === '/root' && method === 'GET') return cors(NextResponse.json({ message: 'Cloud District API' }))
+    if (route === '/root' && method === 'GET') return cors(NextResponse.json({ message: 'Ysa-vapes API' }))
     return cors(NextResponse.json({ error: 'Route ' + route + ' not found' }, { status: 404 }))
   } catch (error) {
     console.error('API Error:', error)

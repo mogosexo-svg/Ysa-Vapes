@@ -93,7 +93,7 @@ function Header({ settings, onSearch, searchQuery }) {
           <div className="h-9 w-9 rounded-lg bg-gradient-to-b from-zinc-700 to-zinc-900 border border-white/10 flex items-center justify-center shadow-md shadow-black/40">
             <Wind className="h-5 w-5 text-zinc-100" />
           </div>
-          <span className="font-semibold text-lg tracking-tight">{settings?.storeName || 'Cloud District'}</span>
+          <span className="font-semibold text-lg tracking-tight">{settings?.storeName || 'Ysa-vapes'}</span>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-7 ml-8">
@@ -457,7 +457,7 @@ function Footer({ settings }) {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="h-9 w-9 rounded-lg bg-gradient-to-b from-zinc-700 to-zinc-900 border border-white/10 flex items-center justify-center"><Wind className="h-5 w-5 text-zinc-100" /></div>
-              <span className="font-semibold text-lg">{settings?.storeName || 'Cloud District'}</span>
+              <span className="font-semibold text-lg">{settings?.storeName || 'Ysa-vapes'}</span>
             </div>
             <p className="text-sm text-white/55 max-w-xs">{settings?.footerText}</p>
           </div>

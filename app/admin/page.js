@@ -65,7 +65,7 @@ function LoginView({ onLogin }) {
             <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-to-br from-purple-600 to-cyan-500 flex items-center justify-center mb-4 neon-glow">
               <Sparkles className="h-7 w-7 text-white" />
             </div>
-            <h1 className="text-2xl font-bold">Cloud District Admin</h1>
+            <h1 className="text-2xl font-bold">Ysa-vapes Admin</h1>
             <p className="text-white/60 text-sm mt-1">Ingresa a tu panel</p>
           </div>
           <div className="space-y-4">
@@ -106,7 +106,7 @@ function DashboardView() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-black mb-1">Dashboard</h1>
-        <p className="text-white/60">Resumen de tu tienda Cloud District</p>
+        <p className="text-white/60">Resumen de tu tienda Ysa-vapes</p>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {cards.map((c, i) => (
@@ -736,7 +736,7 @@ function AdminApp() {
           <div className="flex items-center gap-2">
             <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-purple-600 to-cyan-500 flex items-center justify-center neon-glow"><Sparkles className="h-5 w-5 text-white" /></div>
             <div>
-              <div className="font-bold text-sm">Cloud District</div>
+              <div className="font-bold text-sm">Ysa-vapes</div>
               <div className="text-xs text-white/50">Admin panel</div>
             </div>
           </div>
@@ -757,7 +757,7 @@ function AdminApp() {
       <main className="flex-1 min-w-0">
         <div className="lg:hidden sticky top-0 z-30 glass-strong border-b border-white/10 p-4 flex items-center gap-4">
           <Button size="icon" variant="ghost" onClick={() => setSidebarOpen(true)}><Sliders className="h-5 w-5" /></Button>
-          <span className="font-bold">Cloud District Admin</span>
+          <span className="font-bold">Ysa-vapes Admin</span>
         </div>
         <div className="p-6 md:p-8">
           <Current />
